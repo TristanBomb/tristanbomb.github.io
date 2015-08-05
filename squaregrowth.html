@@ -1,0 +1,284 @@
+
+<!-- saved from url=(0099)https://3d58336d0c17d1f5551dcceee1a112dac666991c.googledrive.com/host/0B795W1ddWOwxT0s2TldLTm5Kekk/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<title>Square Growth</title>
+		<link href='https://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+		<link rel="icon" type="x-icon" href="icon.ico">
+		<link rel="shortcut icon" type="x-icon" href="icon.ico">		
+	<style type="text/css"></style></head>
+	<body>
+		<canvas id="canvas" style="width: 100%; height: 100%; margin: 0px;" width="1600" height="770">
+			Sorry, your browser doesn't support canvas.
+		</canvas>
+
+		<script type="text/javascript">
+			var canvas = document.getElementById("canvas");
+			var ctx = canvas.getContext("2d");
+			ctx.canvas.width = window.innerWidth;
+			ctx.canvas.height = window.innerHeight;
+			window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+			var CANVAS_WIDTH = ctx.canvas.width;
+			var CANVAS_HEIGHT = ctx.canvas.height;
+			var FRAME_TIME = 33;
+			var KEYS = {w: 0, a: 0, s: 0, d: 0, backslash: 0};
+			function getRandomInt(min, max) {
+				return Math.floor(Math.random() * (max - min + 1)) + min;
+			}
+			//TRISTAN
+			function gaussianRandom(mu, sigma) {
+				return Math.round(((Math.random()*2-1)+(Math.random()*2-1)+(Math.random()*2-1))*sigma+mu);
+			}
+			function sign(x) {
+				if (x == 0) { return 0; }
+				return x/Math.abs(x);
+			}
+
+			var moveSquare = {x: CANVAS_WIDTH/2, y: CANVAS_HEIGHT/2, speed_x: 0, speed_y: 0, accel_x: 0, accel_y: 0, side_size: 10};
+			var enemySpeed = 1;
+			var accelMul = 1;
+			var enemySquares = []; //x, y, direction, size_x, size_y
+								   //directions: left up right down 0 1 2 3
+			var alive = true;
+			var topSize = 2500;
+			var score = 0;
+			var enemiesKilled = 0;
+			var level = 1;
+
+			window.addEventListener("keydown", 
+				function(e) {
+					switch(e.keyCode) {
+						case 87:
+						case 38:
+						KEYS.w = 1;
+						break;
+
+						case 65:
+						case 37:
+						KEYS.a = 1;
+						break;
+
+						case 83:
+						case 40:
+						KEYS.s = 1;
+						break;
+
+						case 68:
+						case 39:
+						KEYS.d = 1;
+						break;
+						
+						case 220:
+						KEYS.backslash = 1;
+					}
+				});
+			window.addEventListener("keyup", 
+				function(e) {
+					switch(e.keyCode) {
+						case 87:
+						case 38:
+						KEYS.w = 0;
+						break;
+
+						case 65:
+						case 37:
+						KEYS.a = 0;	
+						break;
+
+						case 83:
+						case 40:
+						KEYS.s = 0;
+						break;
+
+						case 68:
+						case 39:
+						KEYS.d = 0;
+						break;
+						
+						case 220:
+						KEYS.backslash = 0;
+						break;
+					}
+				});
+				//TRISTAN
+			function spawnEnemies() {
+					var levelmod = 1+(level-3)/20
+				if (getRandomInt(1, 5*(1+(moveSquare.side_size/Math.sqrt(topSize))*2)) == 3) {
+					var tempDirection = getRandomInt(0, 3);
+					if (tempDirection == 0) {
+						enemySquares.push({x: -moveSquare.side_size-1, y: getRandomInt(0, CANVAS_HEIGHT-moveSquare.side_size), direction: tempDirection+0, size_x: gaussianRandom(moveSquare.side_size*levelmod, moveSquare.side_size/4), size_y: gaussianRandom(moveSquare.side_size*levelmod, moveSquare.side_size/4)});
+					} else if (tempDirection == 1) {
+						enemySquares.push({x: getRandomInt(0, CANVAS_WIDTH-moveSquare.side_size), y: CANVAS_HEIGHT-1, direction: tempDirection+0, size_x: gaussianRandom(moveSquare.side_size*levelmod, moveSquare.side_size/4), size_y: gaussianRandom(moveSquare.side_size*levelmod, moveSquare.side_size/4)});
+					} else if (tempDirection == 2) {
+						enemySquares.push({x: CANVAS_WIDTH+1, y: getRandomInt(0, CANVAS_HEIGHT-moveSquare.side_size), direction: tempDirection+0, size_x: gaussianRandom(moveSquare.side_size*levelmod, moveSquare.side_size/4), size_y: gaussianRandom(moveSquare.side_size*levelmod, moveSquare.side_size/4)});
+					} else if (tempDirection == 3) {
+						enemySquares.push({x: getRandomInt(0, CANVAS_WIDTH-moveSquare.side_size), y: -moveSquare.side_size-1, direction: tempDirection+0, size_x: gaussianRandom(moveSquare.side_size*levelmod, moveSquare.side_size/4), size_y: gaussianRandom(moveSquare.side_size*levelmod, moveSquare.side_size/4)});
+					}
+				}
+			}
+			function updateEnemies() {
+				for(var enemyIndex = 0; enemyIndex < enemySquares.length; enemyIndex++) {
+					switch (enemySquares[enemyIndex].direction) {
+						case 0:
+						enemySquares[enemyIndex].x += enemySpeed;
+						break;
+
+						case 1:
+						enemySquares[enemyIndex].y -= enemySpeed;
+						break;
+
+						case 2:
+						enemySquares[enemyIndex].x -= enemySpeed;
+						break;
+
+						case 3:
+						enemySquares[enemyIndex].y += enemySpeed;
+						break;
+					}
+				}
+			}
+			function cleanEnemies() {
+				for(var enemyIndex = 0; enemyIndex < enemySquares.length; enemyIndex++) {
+					switch(enemySquares[enemyIndex].direction) {
+						case 0:
+						if (enemySquares[enemyIndex].x > CANVAS_WIDTH) { enemySquares.splice(enemyIndex, 1); }
+						break;
+
+						case 1:
+						if (enemySquares[enemyIndex].y+enemySquares[enemyIndex].size_y < 0) { enemySquares.splice(enemyIndex, 1); }
+						break;
+
+						case 2:
+						if (enemySquares[enemyIndex].x+enemySquares[enemyIndex].size_x < 0) { enemySquares.splice(enemyIndex, 1); }
+						break;
+
+						case 3:
+						if (enemySquares[enemyIndex].y > CANVAS_HEIGHT) { enemySquares.splice(enemyIndex, 1); }
+						break;
+					}
+				}
+			}
+			function update() {
+				if (alive) {
+					moveSquare.accel_x = 0;
+					moveSquare.accel_y = 0;
+					if (KEYS.w) {
+						moveSquare.accel_y -= 1;
+					}
+					if (KEYS.a) {
+						moveSquare.accel_x -= 1;
+					}
+					if (KEYS.s) {
+						moveSquare.accel_y += 1;
+					}
+					if (KEYS.d) {
+						moveSquare.accel_x += 1;
+					}
+					if (KEYS.backslash) {
+						enemySquares = [];
+						enemySpeed += 0.5;
+						moveSquare.x = CANVAS_WIDTH/2;
+						moveSquare.y = CANVAS_HEIGHT/2;
+						moveSquare.speed_x = 0;
+						moveSquare.speed_y = 0;
+						moveSquare.side_size = 10;
+						score = Math.round(score*(1+level/10));
+						topSize = Math.pow(Math.sqrt(topSize)+25, 2);
+						level++;
+						KEYS.backslash = 0;
+					}	
+					moveSquare.speed_x = moveSquare.speed_x * 0.9;
+					moveSquare.speed_y = moveSquare.speed_y * 0.9;
+					moveSquare.speed_x = moveSquare.speed_x + moveSquare.accel_x*accelMul;
+					moveSquare.speed_y = moveSquare.speed_y + moveSquare.accel_y*accelMul;
+					moveSquare.x = moveSquare.x + moveSquare.speed_x;
+					moveSquare.y = moveSquare.y + moveSquare.speed_y;
+
+					spawnEnemies();
+					updateEnemies();
+					cleanEnemies();
+
+					for(var enemyIndex = 0; enemyIndex < enemySquares.length; enemyIndex++) {
+						if (!(enemySquares[enemyIndex].x > moveSquare.x+moveSquare.side_size || enemySquares[enemyIndex].x+enemySquares[enemyIndex].size_x < moveSquare.x || enemySquares[enemyIndex].y > moveSquare.y+moveSquare.side_size || enemySquares[enemyIndex].y+enemySquares[enemyIndex].size_y < moveSquare.y)) { //collision http://stackoverflow.com/questions/2752349/fast-rectangle-to-rectangle-intersection
+							console.log("Collision!");
+							if (enemySquares[enemyIndex].size_x*enemySquares[enemyIndex].size_y <= moveSquare.side_size*moveSquare.side_size) {
+								enemiesKilled++;
+								score += Math.floor(enemySquares[enemyIndex].size_x+enemySquares[enemyIndex].size_y)
+								moveSquare.side_size = Math.floor(Math.sqrt(enemySquares[enemyIndex].size_x*enemySquares[enemyIndex].size_y+moveSquare.side_size*moveSquare.side_size));
+								enemySquares.splice(enemyIndex, 1);
+							} else {
+								alive = false;
+							}
+						}
+					}
+
+					if (moveSquare.side_size*moveSquare.side_size > topSize) {
+						enemySquares = [];
+						enemySpeed += 0.5;
+						moveSquare.x = CANVAS_WIDTH/2;
+						moveSquare.y = CANVAS_HEIGHT/2;
+						moveSquare.speed_x = 0;
+						moveSquare.speed_y = 0;
+						moveSquare.side_size = 10;
+						score = Math.round(score*(1+level/10));
+						topSize = Math.pow(Math.sqrt(topSize)+25, 2);
+						level++;
+					}
+				}
+			}
+
+		 	function draw() {
+		 		if (alive) {
+		 			ctx.fillStyle = "Black"
+			 		ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+			 		ctx.fillStyle = "Silver";
+			 		for(var enemyIndex = 0; enemyIndex < enemySquares.length; enemyIndex++) {
+			 			ctx.fillRect(enemySquares[enemyIndex].x, enemySquares[enemyIndex].y, enemySquares[enemyIndex].size_x, enemySquares[enemyIndex].size_y);
+			 		}
+			 		//ctx.strokeStyle = "Black";
+			 		//for(var enemyIndex = 0; enemyIndex < enemySquares.length; enemyIndex++) {
+			 		//	ctx.strokeRect(enemySquares[enemyIndex].x, enemySquares[enemyIndex].y, enemySquares[enemyIndex].size_x, enemySquares[enemyIndex].size_y);
+			 		//}
+
+			 		ctx.fillStyle = "DeepSkyBlue";
+			 		ctx.fillRect(moveSquare.x, moveSquare.y, moveSquare.side_size, moveSquare.side_size);
+
+			 		ctx.fillStyle = "White";
+			 		ctx.font = "20pt Ubuntu";
+			 		ctx.textAlign = "left";
+			 		ctx.fillText("Score: " + score, 10, 50);
+			 		ctx.textAlign = "right";
+			 		ctx.fillText("Level: " + level, CANVAS_WIDTH-10, 50);
+			 		ctx.fillText("Size to level up: " + (topSize-moveSquare.side_size*moveSquare.side_size), CANVAS_WIDTH-10, 80);
+			 	} else {
+			 		ctx.fillStyle = "Black"
+			 		ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+			 		ctx.fillStyle = "White";
+			 		ctx.font = "75pt Ubuntu";
+			 		ctx.textAlign = "center";
+			 		ctx.fillText("You lost!", CANVAS_WIDTH/2, CANVAS_HEIGHT/2-80);
+			 		ctx.font = "50pt Ubuntu";
+			 		ctx.fillText("Your score: " + score, CANVAS_WIDTH/2, CANVAS_HEIGHT/2);
+			 		ctx.fillText("Your level: " + level, CANVAS_WIDTH/2, CANVAS_HEIGHT/2+60);
+			 		ctx.fillText("Your total size: " + (moveSquare.side_size*moveSquare.side_size + topSize*(level-1)), CANVAS_WIDTH/2, CANVAS_HEIGHT/2+120);
+			 	}
+			}
+
+			function call(timestamp) {
+				var start = new Date();
+				update();
+				draw();
+				var end = new Date();
+				var total = end.getTime()-start.getTime()
+				if (total > FRAME_TIME) {
+					window.requestAnimationFrame(draw);
+				} else {
+					setTimeout(function() {window.requestAnimationFrame(call)}, FRAME_TIME-total);
+				}
+			}
+			window.requestAnimationFrame(call);
+		</script>
+	
+
+		
+			</body></html>

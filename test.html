@@ -1,0 +1,158 @@
+<html>
+	<head>
+		<title>WIP</title>
+	</head>
+	<body style="margin: 0; padding: 0;">
+		<img id="shipImg" style="display:none;" src="ship.png">
+		<img id="bulletImg" style="display:none;" src="pbullet.png">
+		<canvas id="canvas" style="width: 100%; height: 100%; margin: 0; padding: 0; display: block;">
+			Sorry, your browser doesn't support canvas.
+		</canvas>
+
+		<script type="text/javascript">
+			var canvas = document.getElementById("canvas");
+			var ctx = canvas.getContext("2d");
+			ctx.canvas.width = window.innerWidth;
+			ctx.canvas.height = window.innerHeight;
+			window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+			var CANVAS_WIDTH = ctx.canvas.width;
+			var CANVAS_HEIGHT = ctx.canvas.height;
+			var FRAME_TIME = 33;
+			var KEYS = {w: 0, a: 0, s: 0, d: 0};
+			var rot = 0;
+			var firing = 0;
+			var projectiles = []; //x, y, vx, vy, w, l, type
+			var enemies = []; //x, y, vx, vy, w, l
+			
+			window.addEventListener("keydown", 
+				function(e) {
+					switch(e.keyCode) {
+						case 87:
+						KEYS.w = 1;
+						break;
+
+						case 65:
+						KEYS.a = 1;
+						break;
+
+						case 83:
+						KEYS.s = 1;
+						break;
+
+						case 68:
+						KEYS.d = 1;
+						break;
+						
+						case 81:
+						KEYS.q = 1
+						break;
+						
+						case 69:
+						KEYS.e = 1
+						break;
+						
+						case 32:
+						KEYS.space = 1;
+						break;						
+					}
+				});
+			window.addEventListener("keyup", 
+				function(e) {
+					switch(e.keyCode) {
+						case 87:
+						KEYS.w = 0;
+						break;
+
+						case 65:
+						KEYS.a = 0;
+						break;
+
+						case 83:
+						KEYS.s = 0;
+						break;
+
+						case 68:
+						KEYS.d = 0;
+						break;
+						
+						case 81:
+						KEYS.q = 0
+						break;
+						
+						case 69:
+						KEYS.e = 0
+						break;
+						
+						case 32:
+						KEYS.space = 0;
+						break;	
+					}
+				});
+				
+			function fireProjectile(type, x, y, vx, vy) {
+				switch(type) {
+					case 0: //Player projectile
+						projectiles.push({
+							x: CANVAS_WIDTH/2,
+							y: CANVAS_HEIGHT/2,
+							vx: Math.cos((rot-90)*Math.PI/180)*15,
+							vy: Math.sin((rot-90)*Math.PI/180)*15,
+							type: 0,
+							w: 16,
+							l: 16,
+						})
+					break;
+				}
+			}
+			function update() {
+				if (KEYS.a == 1) {rot -= 10;}
+				if (KEYS.d == 1) {rot += 10;}			
+				if (rot > 360) {rot -= 360;}
+				if (rot > 360) {rot -= 360;}
+				if (KEYS.space == 1 & firing == 0) {
+				fireProjectile(0);
+				firing = 1;
+				}
+				if (KEYS.space == 0) {firing = 0;}
+		 		ctx.fillStyle = "black";
+			 	ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);	
+					updateProj();
+				draw();
+
+			}
+			
+			function draw() {		
+				ctx.save();
+				ctx.translate(canvas.width/2,canvas.height/2);
+				ctx.rotate(rot*Math.PI/180);
+				ctx.drawImage(shipImg, -32, -32, 64, 64);
+				ctx.restore();
+		 		ctx.fillStyle = "black";
+			}
+			
+			function updateProj() {
+				for(var projIndex = 0; projIndex < projectiles.length; projIndex++) {
+					ctx.drawImage(bulletImg, projectiles[projIndex].x-8, projectiles[projIndex].y-8, 16, 16);
+					projectiles[projIndex].x += projectiles[projIndex].vx;
+					projectiles[projIndex].y += projectiles[projIndex].vy;
+
+				}			
+			}
+
+
+
+			function call(timestamp) {
+				var start = new Date();
+				update();
+				var end = new Date();
+				var total = end.getTime()-start.getTime()
+				if (total > FRAME_TIME) {
+					window.requestAnimationFrame(draw);
+				} else {
+					setTimeout(function() {window.requestAnimationFrame(call)}, FRAME_TIME-total);
+				}
+			}
+			window.requestAnimationFrame(call);
+		</script>
+	</body>
+</html>
