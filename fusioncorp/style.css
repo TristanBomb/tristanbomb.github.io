@@ -1,0 +1,103 @@
+body {
+    background-color:#0C0C0C;
+    background-image: url("vignette.png"), url("atomblur.png"), url("screen.png");
+    background-size: 100% 100%, 40%, 12px 12px;
+	background-position: center center;
+    background-repeat: no-repeat, no-repeat, repeat;
+	text-align: center;
+    height: 100%;
+    overflow: hidden;
+}
+div.mainrow {
+    display: flex;
+    width: 100%;
+    height: calc(100% - 190px);
+}
+div.panel {
+    text-align: center;
+    align-content: center;
+    border-width: 2px;
+    border-color: #444;
+    border-style: solid;
+    height: available;
+    padding: 2px;
+    margin: 2px;
+    overflow: auto;
+    display: inline-flex;
+}
+div.title {
+    display: block;
+    padding-bottom: 0px;
+    height: 155px;
+    overflow: hidden;
+	   line-height: 80%;
+}
+div.main {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+div.item {
+    margin: 1px;
+    display: flex;
+    background-color: rgba(0, 0, 0, 0.3);
+    height: 96px;
+    border-style: solid;
+    border-color: #444;
+    border-width: 1px;
+}
+div.icon {
+    text-align: center;
+    display: block;
+    color: #f0f0f0;
+    text-shadow: 0px 0px 6px #f0f0f0;
+    background-color: rgba(255,255,255,0.02);
+    line-height: 88px;
+    font-size: 48pt;
+    width:88px;
+    height:88px;
+    margin:4px;
+}
+div.itemtext {
+    text-align: left;
+    padding-left:10px;
+    padding-top:10px;
+}
+div.itemtitle {
+    text-align: left;
+    font-size: 28pt;
+    width: 100%;
+}
+div.itemqty {
+    font-size:16pt;
+    text-align: left;
+    color:#a0a0a0;
+    text-shadow: 0px 0px 5px #a0a0a0;
+    width: 100%;
+}
+h1 {
+    text-shadow: 0px 0px 5px #f0f0f0;
+    font-family:Ubuntu;
+    color:#f0f0f0;
+    font-size:48pt;
+}
+h2 {
+    text-shadow: 0px 0px 5px #f0f0f0;
+    font-family:Ubuntu;
+    color:#f0f0f0;
+    font-size:24pt;
+}
+.paneltitle {
+    text-align: center;
+    display: inline;
+    width: 100%;
+    line-height: 150%;
+}
+
+* {
+	text-align:center;
+    text-shadow: 0px 0px 5px #f0f0f0;
+    font-family:Ubuntu;
+    color:#f0f0f0;
+    font-size:14pt;
+}
