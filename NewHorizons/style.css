@@ -1,7 +1,7 @@
 * {
     font-family: "OCR A Extended";
     color: #fff;
-    font-size: 18pt;
+    font-size: 2.5vmin;
 }
 body {
     margin: 0px;
@@ -14,7 +14,7 @@ body {
 .map {
     position: fixed;
     max-width: 1024px;
-    width: 80%;
+    width: 53.33%;
     top: 50%;
     left: 50%;
     -webkit-transform: translate(-50%,-50%);
@@ -34,8 +34,7 @@ body {
 
 .left {
     width: 20%;
-    max-height: 576px;
-    height: 80%;
+    height: 63.33%;
     top: 50%;
     left: 0%;
     -webkit-transform: translate(0%,-50%);
@@ -48,8 +47,7 @@ body {
 
 .right {
     width: 20%;
-    max-height: 576px;
-    height: 80%;
+    height: 63.33%;
     top: 50%;
     right: 0%;
     -webkit-transform: translate(0%,-50%);
@@ -61,8 +59,7 @@ body {
 }
 
 .top {
-    max-width: 1152px;
-    width: 80%;
+    width: 70%;
     height: 10%;
     top: 0%;
     left: 50%;
@@ -78,13 +75,12 @@ body {
 }
 
 h1 {
-    font-size: 64pt;
+    font-size: 9vmin;
 
 }
 
 .bottom {
-    max-width: 1152px;
-    width: 80%;
+    width: 70%;
     height: 10%;
     bottom: 0%;
     left: 50%;
