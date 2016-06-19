@@ -1,0 +1,29 @@
+[
+    {
+        "symbol": "Nu"
+        "name": "Neutronium"
+        "mass": 1
+        "natural": false
+    }
+    {
+        "symbol": "H"
+        "name": "Hydrogen"
+        "mass": 1.008
+    }
+    {
+        "symbol": "He"
+        "name": "Helium"
+        "mass": 4.003
+    }
+    {
+        "symbol": "Li"
+        "name": "Lithium"
+        "mass": 6.94
+    }
+    {
+        "symbol": "Be"
+        "name": "Beryllium"
+        "mass": 6.94
+    }
+
+]
