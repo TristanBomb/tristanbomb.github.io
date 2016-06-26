@@ -30,6 +30,19 @@ body {
     width: 95%;
 }
 
+.tech {
+    position: fixed;
+    height: 90%;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    -moz-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    -o-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    border: 4px solid #fff;
+}
+
 .left, .right, .top, .bottom, .bottom-hi {
     position: fixed;
     background-color: rgba(0,0,0,0.5);
@@ -101,7 +114,7 @@ h1 {
 }
 
 .bottom-hi {
-    width: 20%;
+    width: 12.5%;
     height: 5%;
     bottom: 0%;
     left: 50%;
